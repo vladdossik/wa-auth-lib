@@ -1,0 +1,11 @@
+auth:
+  service:
+    url: "http://localhost:8080"
+    timeout: 5000
+
+jwt:
+  secret:
+    access: "ZzO7sWqpdy0TfhxrwwoWPkHWhZtqYZZHmOHHLhKJwsnNQJaA0qXQYyizV7uqfF5rljON1MKPv6q7yXDm77cuGF"
+    refresh: "dhnTKNDF3Y5gGULm3YrMcQbyRVghKw9bqtbK9m9Z9hQyspOA6WH2BCXymYImybh9KXh1AP52xFNfzSgGkDSXfY"
+  expiration-ms: 900000
+  refresh-expiration-ms: 604800000
