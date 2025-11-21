@@ -5,4 +5,8 @@ public class UserAuthException extends AuthException {
     public UserAuthException(String message) {
         super(message);
     }
+
+    public UserAuthException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

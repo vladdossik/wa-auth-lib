@@ -69,6 +69,18 @@ public class JwtService {
         return validateToken(refreshToken, jwtRefreshSecret);
     }
 
+    public Claims getAccessClaims(@NonNull String token) {
+        return getClaims(token, jwtAccessSecret);
+    }
+
+    private Claims getClaims(@NonNull String token, @NonNull SecretKey secret) {
+        return Jwts.parser()
+                .verifyWith(secret)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
     private boolean validateToken(@NonNull String token, @NonNull SecretKey secret) {
         try {
             Jwts.parser()
@@ -77,28 +89,16 @@ public class JwtService {
                     .parseSignedClaims(token);
             return true;
         } catch (ExpiredJwtException e) {
-            log.error("Expired JWT token");
+            log.error("Expired JWT token", e);
         } catch (UnsupportedJwtException e) {
-            log.error("Unsupported JWT token");
+            log.error("Unsupported JWT token", e);
         } catch (MalformedJwtException e) {
-            log.error("Malformed JWT token");
+            log.error("Malformed JWT token", e);
         } catch (SignatureException e) {
-            log.error("Invalid JWT token");
+            log.error("Invalid JWT token", e);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Unexpected error during token validation", e);
         }
         return false;
-    }
-
-    public Claims getAccessClaims(@NonNull String token) {
-        return getClaims(token, jwtAccessSecret);
-    }
-
-    public Claims getClaims(@NonNull String token, @NonNull SecretKey secret) {
-        return Jwts.parser()
-                .verifyWith(secret)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
     }
 }

@@ -1,7 +1,5 @@
 package org.wa.auth.lib.security;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,13 +7,15 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-public class JwtAuthentication implements Authentication {
-    private boolean authenticated;
-    private String email;
-    private String phone;
-    private Set<String> roles;
+public record JwtAuthentication(
+        String email,
+        String phone,
+        Set<String> roles,
+        boolean authenticated
+) implements Authentication {
+    public JwtAuthentication(String email, Set<String> roles, String phone) {
+        this(email, phone, roles, true);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -47,7 +47,7 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-        this.authenticated = isAuthenticated;
+        throw new IllegalArgumentException("JwtAuthentication is immutable");
     }
 
     @Override

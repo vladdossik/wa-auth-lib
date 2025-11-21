@@ -2,6 +2,7 @@ package org.wa.auth.lib.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -17,13 +18,19 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final WebClient authServiceWebClient;
+    @Value("${auth-service.login-endpoint}")
+    private String loginUrl;
+    @Value("${auth-service.accessToken-endpoint}")
+    private String accessTokenUrl;
+    @Value("${auth-service.refreshToken-endpoint}")
+    private String refreshTokenUrl;
 
     @Override
     public JwtResponse login(JwtRequest authRequest) throws UserAuthException {
-        log.debug("Attempting login for user: {}", authRequest.getLogin());
+        log.debug("Attempting login for user: {}", authRequest.login());
         try {
             return authServiceWebClient.post()
-                    .uri("/v1/auth/login")
+                    .uri(loginUrl)
                     .bodyValue(authRequest)
                     .retrieve()
                     .onStatus(HttpStatus.UNAUTHORIZED::equals, response ->
@@ -32,13 +39,13 @@ public class AuthServiceImpl implements AuthService {
                             Mono.error(new UserAuthException("Authentication failed")))
                     .bodyToMono(JwtResponse.class)
                     .doOnSuccess(response ->
-                            log.debug("Login successful for user: {}", authRequest.getLogin()))
+                            log.debug("Login successful for user: {}", authRequest.login()))
                     .doOnError(error ->
-                            log.error("Login failed for user {}: {}", authRequest.getLogin(), error.getMessage()))
+                            log.error("Login failed for user {}: {}", authRequest.login(), error.getMessage()))
                     .block();
 
         } catch (Exception e) {
-            throw new UserAuthException("Login failed: " + e.getMessage());
+            throw new UserAuthException("Login failed: ", e);
         }
     }
 
@@ -50,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
             request.setRefreshToken(refreshToken);
 
             return authServiceWebClient.post()
-                    .uri("/v1/auth/token")
+                    .uri(accessTokenUrl)
                     .bodyValue(request)
                     .retrieve()
                     .onStatus(HttpStatus.UNAUTHORIZED::equals, response ->
@@ -60,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
                     .doOnError(error -> log.error("Failed to get access token: {}", error.getMessage()))
                     .block();
         } catch (Exception e) {
-            throw new UserAuthException("Failed to get access token: " + e.getMessage());
+            throw new UserAuthException("Failed to get access token: ", e);
         }
     }
 
@@ -71,7 +78,7 @@ public class AuthServiceImpl implements AuthService {
             RefreshJwtRequest request = new RefreshJwtRequest();
             request.setRefreshToken(refreshToken);
             return authServiceWebClient.post()
-                    .uri("/v1/auth/refresh")
+                    .uri(refreshTokenUrl)
                     .bodyValue(request)
                     .retrieve()
                     .onStatus(HttpStatus.UNAUTHORIZED::equals, response ->
@@ -81,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
                     .doOnError(error -> log.error("Token refresh failed: {}", error.getMessage()))
                     .block();
         } catch (Exception e) {
-            throw new UserAuthException("Token refresh failed: " + e.getMessage());
+            throw new UserAuthException("Token refresh failed: ", e);
         }
     }
 }

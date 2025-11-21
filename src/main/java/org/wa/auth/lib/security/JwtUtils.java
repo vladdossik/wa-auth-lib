@@ -4,29 +4,34 @@ import io.jsonwebtoken.Claims;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JwtUtils {
+    public static JwtAuthentication generate(Claims claims) {
+        String email = claims.getSubject();
+        Set<String> roles = getRoles(claims);
+        String phone = claims.get("phone", String.class);
+        return new JwtAuthentication(email, roles, phone);
+    }
+
     private static Set<String> getRoles(Claims claims) {
         List<?> rolesFromToken = claims.get("roles", List.class);
         if (rolesFromToken == null) return Set.of();
 
         return rolesFromToken.stream()
-                .map(role -> {
-                    if (role instanceof java.util.Map<?, ?> map) {
-                        return map.get("name").toString();
-                    }
-                    return role.toString();
-                })
+                .map(JwtUtils::extractRoleName)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
-    public static JwtAuthentication generate(Claims claims) {
-        final JwtAuthentication jwtInfoToken = new JwtAuthentication();
-        jwtInfoToken.setRoles(getRoles(claims));
-        jwtInfoToken.setEmail(claims.getSubject());
-        return jwtInfoToken;
+    private static String extractRoleName(Object role) {
+        if (role instanceof java.util.Map<?, ?> map) {
+            Object name = map.get("name");
+            return name != null ? name.toString() : null;
+        }
+        return role.toString();
     }
 }
