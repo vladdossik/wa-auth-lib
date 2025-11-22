@@ -3,6 +3,7 @@ package org.wa.auth.lib.security;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.wa.auth.lib.exception.JwtAuthException;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,8 +47,8 @@ public record JwtAuthentication(
     }
 
     @Override
-    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-        throw new IllegalArgumentException("JwtAuthentication is immutable");
+    public void setAuthenticated(boolean isAuthenticated) throws JwtAuthException {
+        throw new JwtAuthException("JwtAuthentication is immutable");
     }
 
     @Override
