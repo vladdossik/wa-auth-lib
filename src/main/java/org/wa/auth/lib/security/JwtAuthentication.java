@@ -55,4 +55,8 @@ public record JwtAuthentication(
     public String getName() {
         return email;
     }
+
+    public String getPhone() {
+        return phone;
+    }
 }
