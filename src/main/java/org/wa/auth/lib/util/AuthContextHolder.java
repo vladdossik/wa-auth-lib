@@ -28,12 +28,6 @@ public class AuthContextHolder {
                 .orElseThrow(() -> new JwtAuthException("User email is not available"));
     }
 
-    public static String getPhone() {
-        log.debug("Getting phone");
-        return getUserPhone()
-                .orElseThrow(() -> new JwtAuthException("User phone is not available"));
-    }
-
     public static boolean isAuthenticated() {
         return getAuthenticationFromContext()
                 .map(JwtAuthentication::isAuthenticated)
@@ -52,7 +46,7 @@ public class AuthContextHolder {
 
     private static Optional<JwtAuthentication> getAuthenticationFromContext() {
         try {
-            log.info("Getting current authentication from context");
+            log.debug("Getting current authentication from context");
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (authentication instanceof JwtAuthentication jwtAuth) {
@@ -71,11 +65,5 @@ public class AuthContextHolder {
         return getAuthenticationFromContext()
                 .map(JwtAuthentication::getName)
                 .filter(email -> email != null && !email.isBlank());
-    }
-
-    private static Optional<String> getUserPhone() {
-        return getAuthenticationFromContext()
-                .map(JwtAuthentication::getPhone)
-                .filter(phone -> phone != null && !phone.isBlank());
     }
 }

@@ -52,43 +52,32 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtResponse getAccessToken(String refreshToken) throws UserAuthException {
         log.debug("Getting new access token using refresh token");
-        try {
-            RefreshJwtRequest request = new RefreshJwtRequest();
-            request.setRefreshToken(refreshToken);
-
-            return authServiceWebClient.post()
-                    .uri(accessTokenUrl)
-                    .bodyValue(request)
-                    .retrieve()
-                    .onStatus(HttpStatus.UNAUTHORIZED::equals, response ->
-                            Mono.error(new UserAuthException("Invalid refresh token")))
-                    .bodyToMono(JwtResponse.class)
-                    .doOnSuccess(response -> log.debug("Successfully obtained new access token"))
-                    .doOnError(error -> log.error("Failed to get access token: {}", error.getMessage()))
-                    .block();
-        } catch (Exception e) {
-            throw new UserAuthException("Failed to get access token: ", e);
-        }
+        return operateRefreshToken(refreshToken, accessTokenUrl, "access token");
     }
 
     @Override
-    public JwtResponse refresh(String refreshToken) throws UserAuthException {
+    public JwtResponse getRefreshToken(String refreshToken) throws UserAuthException {
         log.debug("Refreshing tokens");
+        return operateRefreshToken(refreshToken, refreshTokenUrl, "refresh token");
+    }
+
+    private JwtResponse operateRefreshToken(String refreshToken, String url, String operationName)
+            throws UserAuthException {
         try {
             RefreshJwtRequest request = new RefreshJwtRequest();
             request.setRefreshToken(refreshToken);
             return authServiceWebClient.post()
-                    .uri(refreshTokenUrl)
+                    .uri(url)
                     .bodyValue(request)
                     .retrieve()
                     .onStatus(HttpStatus.UNAUTHORIZED::equals, response ->
                             Mono.error(new UserAuthException("Invalid refresh token")))
                     .bodyToMono(JwtResponse.class)
-                    .doOnSuccess(response -> log.debug("Tokens refreshed successfully"))
-                    .doOnError(error -> log.error("Token refresh failed: {}", error.getMessage()))
+                    .doOnSuccess(response -> log.debug("Successfully obtained new {}", operationName))
+                    .doOnError(error -> log.error("Failed to get {}: {}", operationName, error.getMessage()))
                     .block();
         } catch (Exception e) {
-            throw new UserAuthException("Token refresh failed: ", e);
+            throw new UserAuthException(String.format("Failed to get %s", operationName), e);
         }
     }
 }

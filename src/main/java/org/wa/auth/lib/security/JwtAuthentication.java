@@ -14,7 +14,11 @@ public record JwtAuthentication(
         Set<String> roles,
         boolean authenticated
 ) implements Authentication {
-    public JwtAuthentication(String email, Set<String> roles, String phone) {
+    public JwtAuthentication(String email, Set<String> roles) {
+        this(email, null, roles, true);
+    }
+
+    public JwtAuthentication(String email, String phone, Set<String> roles) {
         this(email, phone, roles, true);
     }
 
@@ -54,9 +58,5 @@ public record JwtAuthentication(
     @Override
     public String getName() {
         return email;
-    }
-
-    public String getPhone() {
-        return phone;
     }
 }
