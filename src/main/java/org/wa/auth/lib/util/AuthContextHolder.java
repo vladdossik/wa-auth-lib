@@ -6,8 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.wa.auth.lib.exception.GoogleTokenException;
 import org.wa.auth.lib.exception.JwtAuthException;
 import org.wa.auth.lib.security.JwtAuthentication;
+import org.wa.auth.lib.service.InMemoryTokenStorageService;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -15,6 +17,9 @@ import java.util.Set;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthContextHolder {
+
+    private static InMemoryTokenStorageService storageService;
+
     public static Collection<? extends GrantedAuthority> getRoles() {
         log.debug("Getting authorities");
         return getAuthenticationFromContext()
@@ -37,6 +42,13 @@ public class AuthContextHolder {
     public static JwtAuthentication getAuthentication() {
         return getAuthenticationFromContext()
                 .orElseThrow(() -> new JwtAuthException("User is not authenticated"));
+    }
+
+    public static String getGoogleRefreshToken(String email) {
+        validateStorageService();
+        return storageService.getToken(email).orElseThrow(
+                () -> new GoogleTokenException("Google Refresh Token not founded")
+        );
     }
 
     public static void cleanUp() {
@@ -65,5 +77,18 @@ public class AuthContextHolder {
         return getAuthenticationFromContext()
                 .map(JwtAuthentication::getName)
                 .filter(email -> email != null && !email.isBlank());
+    }
+
+    public static void setStorageService(final InMemoryTokenStorageService storageService) {
+        AuthContextHolder.storageService = storageService;
+    }
+
+    private static void validateStorageService() {
+        if (storageService == null) {
+            throw new IllegalStateException(
+                    "InMemoryTokenStorageService not initialized in AuthContextHolder. " +
+                            "Please ensure AuthContextInitializer configuration class exists."
+            );
+        }
     }
 }

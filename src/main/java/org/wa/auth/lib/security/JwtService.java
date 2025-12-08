@@ -89,15 +89,15 @@ public class JwtService {
                     .parseSignedClaims(token);
             return true;
         } catch (ExpiredJwtException e) {
-            log.error("Expired JWT token", e);
+            log.error("Expired JWT googleRefreshToken", e);
         } catch (UnsupportedJwtException e) {
-            log.error("Unsupported JWT token", e);
+            log.error("Unsupported JWT googleRefreshToken", e);
         } catch (MalformedJwtException e) {
-            log.error("Malformed JWT token", e);
+            log.error("Malformed JWT googleRefreshToken", e);
         } catch (SignatureException e) {
-            log.error("Invalid JWT token", e);
+            log.error("Invalid JWT googleRefreshToken", e);
         } catch (Exception e) {
-            log.error("Unexpected error during token validation", e);
+            log.error("Unexpected error during googleRefreshToken validation", e);
         }
         return false;
     }

@@ -1,4 +1,4 @@
-package org.wa.auth.lib.service;
+package org.wa.auth.lib.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,7 @@ import org.wa.auth.lib.exception.UserAuthException;
 import org.wa.auth.lib.model.jwt.JwtRequest;
 import org.wa.auth.lib.model.jwt.JwtResponse;
 import org.wa.auth.lib.model.jwt.RefreshJwtRequest;
+import org.wa.auth.lib.service.AuthService;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -51,14 +52,14 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtResponse getAccessToken(String refreshToken) throws UserAuthException {
-        log.debug("Getting new access token using refresh token");
-        return operateRefreshToken(refreshToken, accessTokenUrl, "access token");
+        log.debug("Getting new access googleRefreshToken using refresh googleRefreshToken");
+        return operateRefreshToken(refreshToken, accessTokenUrl, "access googleRefreshToken");
     }
 
     @Override
     public JwtResponse getRefreshToken(String refreshToken) throws UserAuthException {
         log.debug("Refreshing tokens");
-        return operateRefreshToken(refreshToken, refreshTokenUrl, "refresh token");
+        return operateRefreshToken(refreshToken, refreshTokenUrl, "refresh googleRefreshToken");
     }
 
     private JwtResponse operateRefreshToken(String refreshToken, String url, String operationName)
@@ -71,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
                     .bodyValue(request)
                     .retrieve()
                     .onStatus(HttpStatus.UNAUTHORIZED::equals, response ->
-                            Mono.error(new UserAuthException("Invalid refresh token")))
+                            Mono.error(new UserAuthException("Invalid refresh googleRefreshToken")))
                     .bodyToMono(JwtResponse.class)
                     .doOnSuccess(response -> log.debug("Successfully obtained new {}", operationName))
                     .doOnError(error -> log.error("Failed to get {}: {}", operationName, error.getMessage()))

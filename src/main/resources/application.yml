@@ -2,8 +2,15 @@ integration:
   auth-service:
     base-url: "http://localhost:8080"
     timeout: 5000
+  google-fit:
+    base-url: "http://localhost:8082"
+    timeout: 5000
 
 auth-service:
   login-endpoint: "/v1/auth/login"
   accessToken-endpoint: "/v1/auth/token"
   refreshToken-endpoint: "/v1/auth/refresh"
+
+google-fit:
+  authorize-endpoint: "/v1/oauth//authorize"
+  redirect-url: "http://localhost:8082/v1/oauth/callback"
