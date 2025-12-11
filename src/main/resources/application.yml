@@ -7,3 +7,4 @@ auth-service:
   login-endpoint: "/v1/auth/login"
   accessToken-endpoint: "/v1/auth/token"
   refreshToken-endpoint: "/v1/auth/refresh"
+  googleRefreshToken-endpoint: "/v1/users/googleRefreshToken"

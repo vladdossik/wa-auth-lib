@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.wa.auth.lib.exception.JwtAuthException;
+import org.wa.auth.lib.exception.TokenNotFoundException;
 import org.wa.auth.lib.security.JwtAuthentication;
 import java.util.Collection;
 import java.util.Optional;
@@ -39,6 +40,10 @@ public class AuthContextHolder {
                 .orElseThrow(() -> new JwtAuthException("User is not authenticated"));
     }
 
+    public static String getGoogleRefreshToken() {
+        return getToken().orElseThrow(() -> new TokenNotFoundException("Token not found"));
+    }
+
     public static void cleanUp() {
         SecurityContextHolder.clearContext();
         log.debug("Security context cleared");
@@ -65,5 +70,11 @@ public class AuthContextHolder {
         return getAuthenticationFromContext()
                 .map(JwtAuthentication::getName)
                 .filter(email -> email != null && !email.isBlank());
+    }
+
+    private static Optional<String> getToken() {
+        return getAuthenticationFromContext()
+                .map(JwtAuthentication::getGoogleToken)
+                .filter(token -> !token.isBlank());
     }
 }

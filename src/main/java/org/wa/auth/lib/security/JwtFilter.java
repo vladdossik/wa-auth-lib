@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
+import org.wa.auth.lib.service.GoogleTokenClient;
 import java.io.IOException;
 
 @Slf4j
@@ -20,6 +21,7 @@ import java.io.IOException;
 public class JwtFilter extends GenericFilterBean {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private final JwtService jwtService;
+    private final GoogleTokenClient googleTokenClient;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -28,6 +30,8 @@ public class JwtFilter extends GenericFilterBean {
         if (token != null && jwtService.validateAccessToken(token)) {
             final Claims claims = jwtService.getAccessClaims(token);
             final JwtAuthentication jwtInfoToken = JwtUtils.generate(claims);
+            jwtInfoToken.setGoogleToken(googleTokenClient.getGoogleToken());
+            jwtInfoToken.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(jwtInfoToken);
         }
         chain.doFilter(request, response);

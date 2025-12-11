@@ -11,9 +11,10 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JwtUtils {
     public static JwtAuthentication generate(Claims claims) {
-        String email = claims.getSubject();
-        Set<String> roles = getRoles(claims);
-        return new JwtAuthentication(email, roles);
+        final JwtAuthentication jwtInfoToken = new JwtAuthentication();
+        jwtInfoToken.setRoles(getRoles(claims));
+        jwtInfoToken.setEmail(claims.getSubject());
+        return jwtInfoToken;
     }
 
     private static Set<String> getRoles(Claims claims) {

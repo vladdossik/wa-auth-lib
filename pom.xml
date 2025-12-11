@@ -11,7 +11,7 @@
 
     <groupId>org.wa.auth.lib</groupId>
     <artifactId>wa-auth-lib</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>wa-auth-lib</name>
     <packaging>jar</packaging>
 
