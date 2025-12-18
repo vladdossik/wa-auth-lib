@@ -1,9 +1,0 @@
-integration:
-  auth-service:
-    base-url: "http://localhost:8080"
-    timeout: 5000
-
-auth-service:
-  login-endpoint: "/v1/auth/login"
-  accessToken-endpoint: "/v1/auth/token"
-  refreshToken-endpoint: "/v1/auth/refresh"
