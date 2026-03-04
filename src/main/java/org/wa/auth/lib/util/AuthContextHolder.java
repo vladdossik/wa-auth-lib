@@ -23,6 +23,12 @@ public class AuthContextHolder {
                 .orElse(Set.of());
     }
 
+    public static String getId() {
+        log.debug("Getting id");
+        return getUserId()
+                .orElseThrow(() -> new JwtAuthException("User ID is not available"));
+    }
+
     public static String getEmail() {
         log.debug("Getting email");
         return getUserEmail()
@@ -69,12 +75,17 @@ public class AuthContextHolder {
     private static Optional<String> getUserEmail() {
         return getAuthenticationFromContext()
                 .map(JwtAuthentication::getName)
-                .filter(email -> email != null && !email.isBlank());
+                .filter(email -> !email.isBlank());
     }
 
     private static Optional<String> getToken() {
         return getAuthenticationFromContext()
                 .map(JwtAuthentication::getGoogleToken)
                 .filter(token -> !token.isBlank());
+    }
+
+    private static Optional<String> getUserId() {
+        return getAuthenticationFromContext().map(JwtAuthentication::getUserId)
+                .filter(userId -> !userId.isBlank());
     }
 }

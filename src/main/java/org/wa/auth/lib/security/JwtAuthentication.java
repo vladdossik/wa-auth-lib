@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Setter
 public class JwtAuthentication implements Authentication {
     private boolean authenticated;
+    private String userId;
     private String email;
     private String phone;
     private Set<String> roles;
@@ -38,7 +39,7 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public Object getPrincipal() {
-        return email;
+        return userId;
     }
 
     @Override

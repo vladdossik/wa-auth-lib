@@ -13,13 +13,18 @@ public class JwtUtils {
     public static JwtAuthentication createJwtAuth(Claims claims) {
         final JwtAuthentication jwtInfoToken = new JwtAuthentication();
         jwtInfoToken.setRoles(getRoles(claims));
-        jwtInfoToken.setEmail(claims.getSubject());
+        jwtInfoToken.setUserId(claims.getSubject());
+        jwtInfoToken.setEmail(getEmail(claims));
         jwtInfoToken.setGoogleToken(getGoogleToken(claims));
         return jwtInfoToken;
     }
 
     private static String getGoogleToken(Claims claims) {
         return claims.get("google_refresh_token", String.class);
+    }
+
+    private static String getEmail(Claims claims) {
+        return claims.get("email", String.class);
     }
 
     private static Set<String> getRoles(Claims claims) {
