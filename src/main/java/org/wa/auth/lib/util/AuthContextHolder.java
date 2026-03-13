@@ -12,6 +12,7 @@ import org.wa.auth.lib.security.JwtAuthentication;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -23,7 +24,7 @@ public class AuthContextHolder {
                 .orElse(Set.of());
     }
 
-    public static String getId() {
+    public static UUID getId() {
         log.debug("Getting id");
         return getUserId()
                 .orElseThrow(() -> new JwtAuthException("User ID is not available"));
@@ -84,8 +85,8 @@ public class AuthContextHolder {
                 .filter(token -> !token.isBlank());
     }
 
-    private static Optional<String> getUserId() {
+    private static Optional<UUID> getUserId() {
         return getAuthenticationFromContext().map(JwtAuthentication::getUserId)
-                .filter(userId -> !userId.isBlank());
+                .filter(userId -> !userId.toString().isBlank());
     }
 }

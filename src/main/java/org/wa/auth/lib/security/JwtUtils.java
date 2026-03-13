@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -13,7 +14,7 @@ public class JwtUtils {
     public static JwtAuthentication createJwtAuth(Claims claims) {
         final JwtAuthentication jwtInfoToken = new JwtAuthentication();
         jwtInfoToken.setRoles(getRoles(claims));
-        jwtInfoToken.setUserId(claims.getSubject());
+        jwtInfoToken.setUserId(UUID.fromString(claims.getSubject()));
         jwtInfoToken.setEmail(getEmail(claims));
         jwtInfoToken.setGoogleToken(getGoogleToken(claims));
         return jwtInfoToken;
