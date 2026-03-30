@@ -15,7 +15,7 @@ public class AdminServiceImpl implements AdminService {
     private final StringRedisTemplate redisTemplate;
 
     @Override
-    public boolean isBlocked(UUID externalId) {
+    public boolean isUserBlocked(UUID externalId) {
         String key = BLOCKED_USER_PREFIX + externalId;
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }

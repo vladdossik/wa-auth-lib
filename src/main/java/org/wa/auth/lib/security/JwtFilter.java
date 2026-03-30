@@ -36,7 +36,7 @@ public class JwtFilter extends GenericFilterBean {
         if (token != null && jwtService.validateAccessToken(token)) {
             final Claims claims = jwtService.getAccessClaims(token);
             UUID externalId = UUID.fromString(claims.getSubject());
-            if (adminService.isBlocked(externalId)) {
+            if (adminService.isUserBlocked(externalId)) {
                 log.warn("User {} is blocked", externalId);
                 String message = "user " + externalId + " is blocked";
                 httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
